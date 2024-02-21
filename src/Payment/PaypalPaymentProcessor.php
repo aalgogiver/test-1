@@ -14,6 +14,7 @@ class PaypalPaymentProcessor implements PaymentProcessorInterface
     public function process(float $price): void
     {
         try {
+            // TODO: Handle price conversion logic according to business requirements
             $this->paypalPaymentProcessor->pay($price);
         } catch (\Throwable $exception) {
             throw new PaymentException('Error processing payment by Paypal processor', previous: $exception);

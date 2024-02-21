@@ -25,10 +25,10 @@
 ### Requests
 
 #### Calculate price without coupon code
-`curl -XPOST http://localhost:8080/calculate-price -d '{"product":1,"taxNumber":"DE012345677"}'`
+`curl -i -XPOST http://localhost:8080/calculate-price -d '{"product":1,"taxNumber":"DE012345677"}'`
 
 #### Calculate price with coupon code
-`curl -XPOST http://localhost:8080/calculate-price -d '{"product":1,"taxNumber":"DE012345677","couponCode":"FIXED90"}'`
+`curl -i -XPOST http://localhost:8080/calculate-price -d '{"product":1,"taxNumber":"DE012345677","couponCode":"FIXED90"}'`
 
 #### Purchase 
-`curl -XPOST http://localhost:8080/purchase -d '{"product":1,"taxNumber":"DE012345677","couponCode":"FIXED90","paymentProcessor":"paypal"}'`
+`curl -i -XPOST http://localhost:8080/purchase -d '{"product":1,"taxNumber":"DE012345677","couponCode":"FIXED90","paymentProcessor":"paypal"}'`
