@@ -1,0 +1,67 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Dto/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\Calculator\PriceCalculatorInterface: '@App\Calculator\ProductPriceCalculator'
+
+    App\Calculator\DiscountCalculator:
+        decorates: App\Calculator\PriceCalculatorInterface
+        decoration_priority: 20
+        arguments:
+            - '@.inner'
+
+    App\Calculator\TaxCalculator:
+        decorates: App\Calculator\PriceCalculatorInterface
+        decoration_priority: 10
+        arguments:
+            - '@.inner'
+            - '@App\Provider\CountryTaxProvider'
+
+    App\Mapper\RequestMapper:
+        arguments:
+            - '@property_accessor'
+            - '@validator'
+
+    App\Payment\PaymentProcessorRegistry:
+        arguments:
+            - !tagged_iterator { tag: 'app.payment_processor', index_by: 'processor' }
+
+    App\ValueResolver\DtoValueResolver:
+        tags:
+            - controller.argument_value_resolver:
+                  name: dto
+                  priority: 100
+
+    App\EventListener\ExceptionListener:
+        tags: [ kernel.event_listener ]
+
+    App\Payment\PaypalPaymentProcessor:
+        tags:
+            - { name: 'app.payment_processor', processor: 'paypal' }
+
+    App\Payment\StripePaymentProcessor:
+        tags:
+            - { name: 'app.payment_processor', processor: 'stripe' }
+
+    Systemeio\TestForCandidates\PaymentProcessor\PaypalPaymentProcessor:
+
+    Systemeio\TestForCandidates\PaymentProcessor\StripePaymentProcessor:
